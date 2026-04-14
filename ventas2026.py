@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
 
-# 1. CONFIGURACIÓN DE LA PÁGINA (Debe ser estrictamente lo primero)
+# 1. CONFIGURACIÓN DE LA PÁGINA
 st.set_page_config(layout='wide', page_title="Dashboard Estratégico de Ventas")
 
 # 2. DICCIONARIO DE ESTADOS
@@ -73,7 +73,19 @@ c2.metric('Ganancia Total', f'${filtered_df["Profit"].sum():,.2f}')
 c3.metric('N° de Pedidos', len(filtered_df))
 
 # ---------------------------------------------------------
-# 6. MAPA (Ahora en la parte superior para mejor distribución)
+# NUEVO: VISUALIZACIÓN DEL DATAFRAME (Tabla de datos)
+# ---------------------------------------------------------
+st.write("---")
+with st.expander("🔍 Ver listado detallado de datos (DataFrame)"):
+    st.write("Datos filtrados según la selección actual:")
+    # st.dataframe ajusta automáticamente el tamaño y permite ordenar columnas
+    st.dataframe(filtered_df, use_container_width=True)
+    # Opción para descargar los datos filtrados
+    csv = filtered_df.to_csv(index=False).encode('utf-8')
+    st.download_button("Descargar estos datos como CSV", data=csv, file_name="ventas_filtradas.csv", mime="text/csv")
+
+# ---------------------------------------------------------
+# 6. MAPA
 # ---------------------------------------------------------
 st.write("---")
 st.subheader('Distribución Geográfica de Ventas (USA)')
@@ -86,12 +98,12 @@ fig_map = px.choropleth(
     locationmode='USA-states', 
     color='Sales', 
     scope='usa', 
-    color_continuous_scale='YlOrRd' # Escala de Amarillo a Rojo
+    color_continuous_scale='YlOrRd'
 )
 st.plotly_chart(fig_map, use_container_width=True)
 
 # ---------------------------------------------------------
-# 7. GRÁFICAS DE BARRAS (Lado a lado)
+# 7. GRÁFICAS DE BARRAS
 # ---------------------------------------------------------
 st.write("---")
 col_a, col_b = st.columns(2)
@@ -100,7 +112,6 @@ with col_a:
     st.subheader('Ventas por Región')
     sales_reg = filtered_df.groupby('Region')['Sales'].sum().sort_values(ascending=False)
     fig1, ax1 = plt.subplots()
-    # Usamos paleta 'Blues_d' para un look profesional
     sns.barplot(x=sales_reg.index, y=sales_reg.values, palette='Blues_d', ax=ax1)
     ax1.set_ylabel('Ventas ($)')
     st.pyplot(fig1)
@@ -109,19 +120,17 @@ with col_b:
     st.subheader('Ventas por Categoría')
     sales_cat = filtered_df.groupby('Category')['Sales'].sum().sort_values(ascending=False)
     fig2, ax2 = plt.subplots()
-    # Usamos paleta 'flare' (tonos rojizos/naranjas)
     sns.barplot(x=sales_cat.index, y=sales_cat.values, palette='flare', ax=ax2)
     ax2.set_ylabel('Ventas ($)')
     st.pyplot(fig2)
 
 # ---------------------------------------------------------
-# 8. EVOLUCIÓN TEMPORAL (Al final, ancho completo)
+# 8. EVOLUCIÓN TEMPORAL
 # ---------------------------------------------------------
 st.write("---")
 st.subheader('Evolución de Ventas en el Tiempo')
 sales_time = filtered_df.set_index('Order Date').resample('ME')['Sales'].sum().reset_index()
 fig3, ax3 = plt.subplots(figsize=(12, 4))
-# Color sólido hexagonal para la línea
 sns.lineplot(data=sales_time, x='Order Date', y='Sales', marker='o', color='#2E86C1', ax=ax3)
 ax3.grid(True, linestyle='--', alpha=0.6)
 st.pyplot(fig3)
