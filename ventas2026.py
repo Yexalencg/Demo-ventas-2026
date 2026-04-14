@@ -25,7 +25,7 @@ us_state_to_abbrev = {
 @st.cache_data
 def load_data():
     # Ruta relativa para que funcione en GitHub/Streamlit Cloud
-    file_path = 'datosII/SalidaVentas.xlsx' 
+    file_path = 'datos/SalidaVentas.xlsx' 
     df = pd.read_excel(file_path)
     if 'Order Date' in df.columns:
         df['Order Date'] = pd.to_datetime(df['Order Date'])
