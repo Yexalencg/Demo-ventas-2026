@@ -85,21 +85,21 @@ with col_a:
     st.pyplot(fig1)
 
 with col_b:
-    st.subheader('Ventas por Categoría')
+    st.subheader('Categorías más vendidas')
     sales_cat = filtered_df.groupby('Category')['Sales'].sum().sort_values(ascending=False)
     fig2, ax2 = plt.subplots()
     sns.barplot(x=sales_cat.index, y=sales_cat.values, palette='magma', ax=ax2)
     st.pyplot(fig2)
 
 # Gráfica 3: Evolución Temporal (Corregido 'ME')
-st.subheader('📈 Evolución de Ventas Mensuales')
+st.subheader('Ventas a lo largo del tiempo')
 sales_time = filtered_df.set_index('Order Date').resample('ME')['Sales'].sum().reset_index()
 fig3, ax3 = plt.subplots(figsize=(12,4))
 sns.lineplot(data=sales_time, x='Order Date', y='Sales', marker='o', ax=ax3)
 st.pyplot(fig3)
 
 # 7. MAPA (Requisito)
-st.subheader('🌍 Distribución Geográfica por Estado')
+st.subheader('Ventas ditribuidas en el globo')
 sales_state = filtered_df.groupby('State')['Sales'].sum().reset_index()
 
 # Convertimos nombres a códigos de 2 letras para que Plotly los reconozca
